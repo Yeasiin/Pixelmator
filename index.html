@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .control-board {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        border: 1px solid #333;
+        padding: 10px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        padding-top: 30px;
+        align-items: center;
+      }
+      canvas {
+        margin: 1rem;
+        border: 2px solid darkcyan;
+      }
+
+      .app-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      input[type="color"]::before {
+        height: 30px;
+        width: 30px;
+      }
+
+      .rotate {
+        transform: rotate(-90deg);
+        width: 0;
+        margin-top: 110px;
+      }
+
+      label,
+      .eraser {
+        cursor: pointer;
+      }
+
+      .relativ {
+        position: relative;
+      }
+
+      .relativ > img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        left: 0;
+        pointer-events: none;
+        object-fit: contain;
+        max-width: 95%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="relativ">
+      <img
+        src="man.png"
+        id="source"
+        style="max-width: 100%"
+        alt=""
+        class="canvas-image"
+      />
+      <canvas id="draw" height="100vh" width="100vw"></canvas>
+    </div>
+
+    <div class="control-board">
+      <div>
+        <input type="color" name="color" id="color" hidden />
+        <label for="color" title="Brush">
+          <svg class="app-icon">
+            <use xlink:href="icon.svg#icon-brush"></use>
+          </svg>
+        </label>
+      </div>
+      <div class="eraser" title="Eraser">
+        <svg class="app-icon">
+          <use xlink:href="icon.svg#icon-eraser"></use>
+        </svg>
+      </div>
+      <div class="rotate">
+        <input
+          type="range"
+          name="range"
+          min="1"
+          max="50"
+          value="1"
+          class="slider"
+          id="range"
+        />
+      </div>
+    </div>
+
+    <script>
+      /*
+      // TODO: Clear Art Board
+      // TODO: Undo ArtBoard
+      // TODO: Save ArtBoard
+
+
+
+      
+
+
+
+      */
+
+      //
+      //
+
+      //  Select DOM
+      const canvas = document.querySelector("#draw");
+      const color = document.querySelector("#color");
+      const eraser = document.querySelector(".eraser");
+      const range = document.querySelector("#range");
+
+      // Load Image for Drawing
+
+      /*  // Image on Canvas
+
+      const image = document.getElementById("source");
+      image.addEventListener("load", (e) => {
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+      }); */
+
+      // Setting or canvas Drawing
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth - 50;
+      canvas.height = window.innerHeight - 50;
+      ctx.strokeStyle = "#BADA55";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      // ctx.globalCompositeOperation = "hard-light";
+
+      range.addEventListener("change", (e) => {
+        ctx.lineWidth = e.target.value;
+      });
+
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      function draw(e) {
+        if (!isDrawing) return;
+        color.addEventListener("change", (e) => {
+          ctx.strokeStyle = e.target.value;
+        });
+        eraser.addEventListener("click", () => {
+          ctx.strokeStyle = "#fff";
+        });
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      }
+
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      });
+      canvas.addEventListener("mouseup", () => (isDrawing = false));
+      canvas.addEventListener("mouseout", () => (isDrawing = false));
+    </script>
+  </body>
+</html>
